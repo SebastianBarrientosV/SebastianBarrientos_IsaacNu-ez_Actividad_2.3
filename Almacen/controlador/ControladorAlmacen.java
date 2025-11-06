@@ -26,18 +26,53 @@ public class ControladorAlmacen {
     }
 
     private void crearProducto() {
-        String nombre = vista.pedirDato("Nombre del producto:", "Crear producto");
-        if (nombre == null || nombre.trim().isEmpty()) return;
+    String nombre = vista.pedirDato("Nombre del producto:", "Crear producto");
+    if (nombre == null || nombre.trim().isEmpty()) return;
+    nombre = nombre.trim();
 
-        String sStock = vista.pedirDato("Stock inicial (entero):", "Crear producto");
-        int stock = parseIntSafe(sStock, 0);
-
-        Producto p = bodega.agregarProducto(nombre.trim(), stock);
-        vista.listModel.addElement(p);
-        vista.listaProductos.setSelectedValue(p, true);
-
-        System.out.println("[CREADO] " + p);
+    // Verificar si ya existe un producto con ese nombre
+    Producto existente = null;
+    for (Producto p : bodega.obtenerProductos()) {
+        if (p.getNombre().equalsIgnoreCase(nombre)) {
+            existente = p;
+            break;
+        }
     }
+
+    if (existente != null) {
+        int opcion = JOptionPane.showConfirmDialog(
+                vista,
+                "⚠️ El producto \"" + nombre + "\" ya existe.\n¿Desea agregarle stock?",
+                "Producto existente",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+        );
+
+        if (opcion == JOptionPane.YES_OPTION) {
+            String sCant = vista.pedirDato("Cantidad a agregar:", "Agregar stock");
+            int cantidad = parseIntSafe(sCant, 0);
+            if (cantidad > 0) {
+                bodega.registrarEntrada(existente.getId(), cantidad);
+                refrescarLista();
+                vista.mostrarMensaje("Se agregaron " + cantidad + " unidades a " + nombre + ".", "Stock actualizado", JOptionPane.INFORMATION_MESSAGE);
+                System.out.println("[STOCK AUMENTADO] " + existente.getNombre() + " (+" + cantidad + ")");
+            } else {
+                vista.mostrarMensaje("Cantidad inválida. No se modificó el stock.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        return; // Salimos sin crear un nuevo producto
+    }
+
+    // Si no existe, crear nuevo producto
+    String sStock = vista.pedirDato("Stock inicial (entero):", "Crear producto");
+    int stock = parseIntSafe(sStock, 0);
+
+    Producto p = bodega.agregarProducto(nombre, stock);
+    vista.listModel.addElement(p);
+    vista.listaProductos.setSelectedValue(p, true);
+
+    System.out.println("[CREADO] " + p);
+}
 
     private void registrarEntrada() {
         Producto seleccionado = vista.listaProductos.getSelectedValue();
@@ -81,11 +116,18 @@ public class ControladorAlmacen {
         StringBuilder sb = new StringBuilder();
         List<Producto> productos = bodega.obtenerProductos();
         for (Producto p : productos) sb.append(p).append("\n");
-        if (productos.isEmpty()) sb.append("No hay productos.");
-
+        if (productos.isEmpty()) 
+        JOptionPane.showMessageDialog(
+                vista,
+                "✅No hay productos en el inventario.✅",
+                "Inventario",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+        else{
         vista.mostrarTextoLargo("Inventario total", sb.toString());
         System.out.println("\n=== REPORTE: INVENTARIO TOTAL ===\n" + sb);
     }
+}
 
     private void reporteStockCritico() {
         String sUmbral = vista.pedirDato("Umbral (entero):", "Stock crítico");
@@ -123,3 +165,4 @@ public class ControladorAlmacen {
         try { return Integer.parseInt(s.trim()); } catch (Exception e) { return def; }
     }
 }
+
