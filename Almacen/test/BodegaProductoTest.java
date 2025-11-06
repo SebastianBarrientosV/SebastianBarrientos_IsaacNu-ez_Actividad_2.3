@@ -1,9 +1,7 @@
 package test;
 
-import modelo.Producto;
-import modelo.Bodega;
-import org.junit.Before;
-import org.junit.Test;
+import modelo.*;
+import org.junit.*;
 
 import static org.junit.Assert.*;
 
@@ -84,4 +82,5 @@ public class BodegaProductoTest {
         assertTrue(lista.contains(producto2));
     }
 }
+
 
