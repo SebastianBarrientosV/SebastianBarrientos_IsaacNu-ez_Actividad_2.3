@@ -83,8 +83,9 @@ public class ControladorAlmacen {
 
         String sCant = vista.pedirDato("Cantidad a ingresar:", "Registrar entrada");
         int cantidad = parseIntSafe(sCant, 0);
-        if (cantidad <= 0) return;
-
+        if (cantidad <= 0) {vista.mostrarMensaje("Cantidad inválida. No se modificó el stock.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+        }
         if (bodega.registrarEntrada(seleccionado.getId(), cantidad)) {
             refrescarLista();
             vista.mostrarMensaje("Entrada registrada.", "OK", JOptionPane.INFORMATION_MESSAGE);
@@ -165,4 +166,5 @@ public class ControladorAlmacen {
         try { return Integer.parseInt(s.trim()); } catch (Exception e) { return def; }
     }
 }
+
 
