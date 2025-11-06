@@ -49,17 +49,7 @@ public class ControladorAlmacen {
         );
 
         if (opcion == JOptionPane.YES_OPTION) {
-            String sCant = vista.pedirDato("Cantidad a agregar:", "Agregar stock");
-            int cantidad = parseIntSafe(sCant, 0);
-            if (cantidad > 0) {
-                bodega.registrarEntrada(existente.getId(), cantidad);
-                refrescarLista();
-                vista.mostrarMensaje("Se agregaron " + cantidad + " unidades a " + nombre + ".", "Stock actualizado", JOptionPane.INFORMATION_MESSAGE);
-                System.out.println("[STOCK AUMENTADO] " + existente.getNombre() + " (+" + cantidad + ")");
-            } else {
-                vista.mostrarMensaje("Cantidad inválida. No se modificó el stock.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
+            registrarEntrada();
         return; // Salimos sin crear un nuevo producto
     }
 
@@ -166,5 +156,6 @@ public class ControladorAlmacen {
         try { return Integer.parseInt(s.trim()); } catch (Exception e) { return def; }
     }
 }
+
 
 
