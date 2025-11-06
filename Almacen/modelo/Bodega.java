@@ -1,7 +1,6 @@
 package modelo;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Bodega {
     private final List<Producto> productos = new ArrayList<>();
@@ -37,3 +36,4 @@ public class Bodega {
         return null;
     }
 }
+
